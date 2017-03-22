@@ -1,13 +1,13 @@
 <?php
 require_once("../common.inc.php");
-require_once("../config.php");
-require_once("../Member.class.php");
-require_once("../LogEntry.class.php");
-require_once("../Blog.Class.php");
+//require_once("../config.php");
+//require_once("../Member.class.php");
+//require_once("../LogEntry.class.php");
+//require_once("../Blog.Class.php");
 checkLogin();
 $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
-$order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "user_id";
+$order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
 
 list($posts, $totalRows) = Blog::getPosts($start, PAGE_SIZE, $order);
 displayPageHeader("View recent blog posts", true);
@@ -16,11 +16,16 @@ displayPageHeader("View recent blog posts", true);
 
 ?>
 <!-- display all blog posts -->
+
+    <h2>Displaying Blog Posts <?php echo $start + 1 ?> - <?php echo min( $start +  PAGE_SIZE, $totalRows ) ?> of <?php echo $totalRows ?></h2>
     <table style="width: 30em; border: 1px solid #666;">
         <tr>
-            <th>User id</th>
-            <th>Blog Post ID</th>
-            <th>Blog text</th>
+
+            // allow user to set order by column
+            <th><?php if ( $order != "userid" ) { ?><a href="blog.php?order=userid"><?php } ?>User<?php if ( $order != "userid" ) { ?></a><?php } ?></th>
+            <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
+            <th><?php if ( $order != "body" ) { ?><a href="blog.php?order=body"><?php } ?>post<?php if ( $order != "body" ) { ?></a><?php } ?></th>
+            <th><?php if ( $order != "postdate" ) { ?><a href="blog.php?order=postdate"><?php } ?>post date<?php if ( $order != "postdate" ) { ?></a><?php } ?></th>
         </tr>
         <?php
         $rowCount = 0;
@@ -29,9 +34,10 @@ displayPageHeader("View recent blog posts", true);
             ?>
 
             <tr<?php if ($rowCount % 2 == 0) echo ' class="alt"' ?>>
-                <td><?php echo $post->getValueEncoded("user_id") ?></td>
-                <td><?php echo $post->getValueEncoded("post_id") ?></td>
+                <td><?php echo $post->getValueEncoded("userid") ?></td>
+                <td><?php echo $post->getValueEncoded("postid") ?></td>
                 <td><?php echo $post->getValueEncoded("body") ?></td>
+                <td><?php echo $post->getValueEncoded("postdate") ?></td>
             </tr>
             <?php
 
@@ -40,7 +46,15 @@ displayPageHeader("View recent blog posts", true);
     </table>
 
 
-
+    <div style="width: 30em; margin-top: 20px; text-align: center;">
+<?php if ( $start > 0 ) { ?>
+    <a href="blog.php?start=<?php echo max( $start - PAGE_SIZE, 0 ) ?>&amp;order=<?php echo $order ?>">Previous page</a>
+<?php } ?>
+    &#160;
+<?php if ( $start + PAGE_SIZE < $totalRows ) { ?>
+    <a href="blog.php?start=<?php echo min( $start + PAGE_SIZE, $totalRows ) ?>&amp;order=<?php echo $order ?>">Next page</a>
+<?php } ?>
+    </div>
 
 
 <?php displayPageFooter(); ?>

@@ -4,14 +4,14 @@ require_once( "../common.inc.php" );
 
 checkLogin();
 
-$user_id = $_SESSION["member"]->getValue( "id" );
+$userid = $_SESSION["member"]->getValue( "id" );
 
 $username = $_SESSION["member"]->getValue( "username" );
 
 
 // if the form action is register add user or handle errors
 if ( isset( $_POST["action"] ) and $_POST["action"] == "insertBlogPost" ) {
-    $user_id = $_SESSION["member"]->getValue( "id" );
+    $userid = $_SESSION["member"]->getValue( "id" );
     processForm();
 } else {
     displayForm( array(), array(), new Blog( array() ) );
@@ -33,8 +33,8 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
     <form action="newBlogPost.php" method="post" style="margin-bottom: 50px;">
         <div style="width: 30em;">
             <input name="action" type="hidden" value="insertBlogPost">
-            <!--<label for="user_id"<?php validateField( "user_id", $missingFields ) ?>>user id</label>-->
-            <input type="hidden" id="user_id" cols="50" name="user_id" rows="4" value="<?php echo $_SESSION["member"]->getValue( "id" ); ?>"><?php echo $blog->getValueEncoded( "user_id" ) ?>
+            <!--<label for="userid"<?php validateField( "userid", $missingFields ) ?>>user id</label>-->
+            <input type="hidden" id="userid" cols="50" name="userid" rows="4" value="<?php echo $_SESSION["member"]->getValue( "id" ); ?>"><?php echo $blog->getValueEncoded( "userid" ) ?>
             <div style="clear: both;">
             <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Post</label>
             <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
@@ -52,14 +52,15 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
 function processForm() {
 
 
-    $requiredFields = array( "user_id", "body" );
+    $requiredFields = array( "userid", "body" );
     $missingFields = array();
     $errorMessages = array();
     $blog = new blog( array(
-        "user_id" => isset( $_POST["user_id"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["user_id"] ) : "",
+        "userid" => isset( $_POST["userid"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["userid"] ) : "",
         "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : "",
+        "postdate" =>  date( "Y-m-d H:i:s" )
 
-    ) );
+        ) );
     foreach ( $requiredFields as $requiredField ) {
         if ( !$blog->getValue( $requiredField ) ) {
             $missingFields[] = $requiredField;
@@ -72,8 +73,6 @@ function processForm() {
 
     if ( $errorMessages ) {
         displayForm( $errorMessages, $missingFields, $blog );
-        echo "id is " . $_POST['user_id'];
-        echo $_POST['body'];
     } else {
         $blog->insertBlogPost();
         displayThanks();
