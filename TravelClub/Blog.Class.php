@@ -42,7 +42,8 @@ class Blog extends DataObject
 
 
     // insert new record from form data
-    public function insertBlogPost() {
+    public function insertBlogPost()
+    {
         $conn = parent::connect();
         $sql = "INSERT INTO " . TBL_BLOG . " (
             userid,
@@ -55,17 +56,45 @@ class Blog extends DataObject
         )";
         // bind values and handle any errors encountered
         try {
-            $st = $conn->prepare( $sql );
+            $st = $conn->prepare($sql);
             // have to get the member id in here too
-            $st->bindValue( ":userid", $this->data["userid"], PDO::PARAM_STR );
-            $st->bindValue( ":body", $this->data["body"], PDO::PARAM_STR );
-            $st->bindValue( ":postdate", $this->data["postdate"], PDO::PARAM_STR );
+            $st->bindValue(":userid", $this->data["userid"], PDO::PARAM_STR);
+            $st->bindValue(":body", $this->data["body"], PDO::PARAM_STR);
+            $st->bindValue(":postdate", $this->data["postdate"], PDO::PARAM_STR);
             $st->execute();
-            parent::disconnect( $conn );
-        } catch ( PDOException $e ) {
-            parent::disconnect( $conn );
-            die( "Query failed: " . $e->getMessage() );
+            parent::disconnect($conn);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
         }
     }
+
+
+    // user can view all their own posts
+    public static function viewMyPosts($startRow, $numRows, $order, $userid)
+    {
+        $conn = parent::connect();
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order  LIMIT :startRow, :numRows";
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":startRow", $startRow, PDO::PARAM_INT);
+            $st->bindValue(":numRows", $numRows, PDO::PARAM_INT);
+            $st->bindValue(":userid", $userid, PDO::PARAM_INT);
+            $st->execute();
+            $posts = array();
+            foreach ($st->fetchAll() as $row) {
+                $posts[] = new Blog($row);
+            }
+            $st = $conn->query("SELECT found_rows() AS totalRows");
+            $row = $st->fetch();
+            parent::disconnect($conn);
+            return array($posts, $row["totalRows"]);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+
 
 }
