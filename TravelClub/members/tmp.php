@@ -1,28 +1,26 @@
 <?php
 require_once( "../common.inc.php" );
-require_once ("memberNav.php");
-
+require_once( "../Blog.Class.php" );
 
 checkLogin();
 
-$userid = $_SESSION["member"]->getValue( "id" );
-
+$user_id = $_SESSION["member"]->getValue( "id" );
 $username = $_SESSION["member"]->getValue( "username" );
-
-// show nav bar for members area
-displayNavBar();
+print_r($_SESSION);
+echo "<br>";
+echo $user_id;
+echo "<br>";
+echo $username;
 // if the form action is register add user or handle errors
-if ( isset( $_POST["action"] ) and $_POST["action"] == "insertBlogPost" ) {
-    $userid = $_SESSION["member"]->getValue( "id" );
+if ( isset( $_POST["action"] ) and $_POST["action"] == "newBlogPost" ) {
     processForm();
 } else {
     displayForm( array(), array(), new Blog( array() ) );
 }
 
-
 // if there are no errors display the form
 function displayForm( $errorMessages, $missingFields, $blog ) {
-    displayPageHeader( "HI, Blog about your latest adventure" );
+    displayPageHeader( "HI, tell us about your latest trip!" );
 
     if ( $errorMessages ) {
         foreach ( $errorMessages as $errorMessage ) {
@@ -30,18 +28,14 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
         }
     } else {
         ?>
-        <p>Add a blog post.</p>
+        <p>Add a new blog post</p>
+        <p>Fields marked with an asterisk (*) are required.</p>
     <?php } ?>
-
-
-
     <form action="newBlogPost.php" method="post" style="margin-bottom: 50px;">
         <div style="width: 30em;">
-            <input name="action" type="hidden" value="insertBlogPost">
-            <!--<label for="userid"<?php validateField( "userid", $missingFields ) ?>>user id</label>-->
-            <input type="hidden" id="userid" cols="50" name="userid" rows="4" value="<?php echo $_SESSION["member"]->getValue( "id" ); ?>"><?php echo $blog->getValueEncoded( "userid" ) ?>
-            <div style="clear: both;">
-            <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Post</label>
+            <input name="action" type="hidden" value="newBlogPost">
+
+            <label for="body">Enter your post here</label>
             <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
             <div style="clear: both;">
                 <input id="submitButton" name="submitButton" type="submit" value="Send Details">
@@ -56,16 +50,14 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
 //  process the form data and store it in the database
 function processForm() {
 
-
-    $requiredFields = array( "userid", "body" );
+    $requiredFields = array( "body" );
     $missingFields = array();
     $errorMessages = array();
     $blog = new blog( array(
-        "userid" => isset( $_POST["userid"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["userid"] ) : "",
-        "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : "",
-        "postdate" =>  date( "Y-m-d H:i:s" )
+        "user_id" =>  $_SESSION["blog"]->getValue( "id" ),
+        "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : ""
 
-        ) );
+    ) );
     foreach ( $requiredFields as $requiredField ) {
         if ( !$blog->getValue( $requiredField ) ) {
             $missingFields[] = $requiredField;
@@ -79,7 +71,7 @@ function processForm() {
     if ( $errorMessages ) {
         displayForm( $errorMessages, $missingFields, $blog );
     } else {
-        $blog->insertBlogPost();
+        $blog->insert();
         displayThanks();
     }
 }
@@ -87,14 +79,10 @@ function processForm() {
 // when the values are stored, display a thankyou page
 function displayThanks() {
 
-    displayPageHeader( "Thanks for blogging with us!" );
+    displayPageHeader( "Thanks for registering!" );
     ?>
-    <p>Thank you, your blog post has been added.</p>
-    <a href="blog.php">go to blog page</a>
+    <p>Thank you for the new post, happy travels</p>
     <?php
-//sleep(5);
-//header("Location: blog.php");
-//exit();
     displayPageFooter();
 }
 ?>

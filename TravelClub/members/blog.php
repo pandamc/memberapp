@@ -5,10 +5,11 @@ require_once("../common.inc.php");
 //require_once("../LogEntry.class.php");
 //require_once("../Blog.Class.php");
 checkLogin();
+
 $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
 $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
-
+displayNavBar();
 list($posts, $totalRows) = Blog::getPosts($start, PAGE_SIZE, $order);
 displayPageHeader("View recent blog posts", true);
 
