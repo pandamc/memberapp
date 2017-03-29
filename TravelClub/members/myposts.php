@@ -19,7 +19,7 @@ displayPageHeader("View your blog posts", true);
 
 
 ?>
-<!-- display all blog posts -->
+<!-- display all blog posts by the logged in user -->
 
 
 
@@ -28,10 +28,12 @@ displayPageHeader("View your blog posts", true);
     <tr>
 
         // allow user to set order by column
-        <th><?php if ( $order != "userid" ) { ?><a href="blog.php?order=userid"><?php } ?>User<?php if ( $order != "userid" ) { ?></a><?php } ?></th>
-        <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
+        <th>User <?php if ( $order != "userid" ) { ?><a href="blog.php?order=userid&$direction=ASC"><?php } ?>^<?php if ( $order != "userid") { ?></a><?php } ?></th>
+        <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid&DESC"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
         <th><?php if ( $order != "body" ) { ?><a href="blog.php?order=body"><?php } ?>post<?php if ( $order != "body" ) { ?></a><?php } ?></th>
         <th><?php if ( $order != "postdate" ) { ?><a href="blog.php?order=postdate"><?php } ?>post date<?php if ( $order != "postdate" ) { ?></a><?php } ?></th>
+        <th>Edit your post</th>
+        <th>Delete your post</th>
     </tr>
     <?php
     $rowCount = 0;
@@ -44,6 +46,10 @@ displayPageHeader("View your blog posts", true);
             <td><?php echo $post->getValueEncoded("postid") ?></td>
             <td><?php echo $post->getValueEncoded("body") ?></td>
             <td><?php echo $post->getValueEncoded("postdate") ?></td>
+            <td><a href="../editPost.php?postid=<?php echo $post->getValueEncoded( "postid" ) ?>&body=<?php echo $post->getValueEncoded( "body" ) ?>"><?php echo $post->getValueEncoded( "postid" ) ?></a></td>
+            <td><a href="../deletePost.php?postid=<?php echo $post->getValueEncoded( "postid" ) ?>&body=<?php echo $post->getValueEncoded( "body" ) ?>"><?php echo $post->getValueEncoded( "postid" ) ?></a></td>
+
+
         </tr>
         <?php
 
@@ -51,7 +57,7 @@ displayPageHeader("View your blog posts", true);
     ?>
 </table>
 
-
+<!-- display forward and back links for pagination -->
 <div style="width: 30em; margin-top: 20px; text-align: center;">
     <?php if ( $start > 0 ) { ?>
         <a href="blog.php?start=<?php echo max( $start - PAGE_SIZE, 0 ) ?>&amp;order=<?php echo $order ?>">Previous page</a>
