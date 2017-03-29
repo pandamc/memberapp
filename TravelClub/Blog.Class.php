@@ -57,7 +57,6 @@ class Blog extends DataObject
         // bind values and handle any errors encountered
         try {
             $st = $conn->prepare($sql);
-            // have to get the member id in here too
             $st->bindValue(":userid", $this->data["userid"], PDO::PARAM_STR);
             $st->bindValue(":body", $this->data["body"], PDO::PARAM_STR);
             $st->bindValue(":postdate", $this->data["postdate"], PDO::PARAM_STR);
@@ -71,10 +70,13 @@ class Blog extends DataObject
 
 
     // user can view all their own posts
-    public static function viewMyPosts($startRow, $numRows, $order, $userid)
+    //public static function viewMyPosts($startRow, $numRows, $order, $direction, $userid)
+        public static function viewMyPosts($startRow, $numRows, $order, $userid)
     {
         $conn = parent::connect();
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order  LIMIT :startRow, :numRows";
+        //$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order  $direction LIMIT :startRow, :numRows";
+        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order   LIMIT :startRow, :numRows";
+        echo $sql;
         try {
             $st = $conn->prepare($sql);
             $st->bindValue(":startRow", $startRow, PDO::PARAM_INT);
@@ -96,5 +98,66 @@ class Blog extends DataObject
     }
 
 
+    // view single post in update form
+    public function viewBlogPost($postid, $body )
+    {
+        $conn = parent::connect();
+        $sql = "SELECT * from " . TBL_BLOG . " WHERE postid = :postid ";
+        echo $sql;
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":postid", $postid, PDO::PARAM_STR);
+            $st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->execute();
+            $row = $st->fetch();
+            parent::disconnect($conn);
+            if ($row) return new Blog($row);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+
+
+    // insert new record from form data
+    public function updateBlogPost($postid, $body)
+    {
+        $conn = parent::connect();
+        $sql = "UPDATE blog set body = :body where postid = :postid";
+        echo $sql;
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":postid", $postid, PDO::PARAM_STR);
+            $st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->execute();
+            parent::disconnect($conn);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+
+
+    // delete single post
+    public function deleteBlogPost($postid )
+    {
+        $conn = parent::connect();
+        $sql = "DELETE  from " . TBL_BLOG . " WHERE postid = :postid ";
+        //echo $sql;
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":postid", $postid, PDO::PARAM_STR);
+            //$st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->execute();
+            //$row = $st->fetch();
+            parent::disconnect($conn);
+            //if ($row) return new Blog($row);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
 
 }
