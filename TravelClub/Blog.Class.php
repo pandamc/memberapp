@@ -76,7 +76,6 @@ class Blog extends DataObject
         $conn = parent::connect();
         //$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order  $direction LIMIT :startRow, :numRows";
         $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order   LIMIT :startRow, :numRows";
-        echo $sql;
         try {
             $st = $conn->prepare($sql);
             $st->bindValue(":startRow", $startRow, PDO::PARAM_INT);
@@ -99,15 +98,14 @@ class Blog extends DataObject
 
 
     // view single post in update form
-    public function viewBlogPost($postid, $body )
+    public function viewBlogPost($postid )
     {
         $conn = parent::connect();
         $sql = "SELECT * from " . TBL_BLOG . " WHERE postid = :postid ";
-        echo $sql;
         try {
             $st = $conn->prepare($sql);
             $st->bindValue(":postid", $postid, PDO::PARAM_STR);
-            $st->bindValue(":body", $body, PDO::PARAM_STR);
+            //$st->bindValue(":body", $body, PDO::PARAM_STR);
             $st->execute();
             $row = $st->fetch();
             parent::disconnect($conn);
@@ -120,16 +118,17 @@ class Blog extends DataObject
 
 
 
-    // insert new record from form data
-    public function updateBlogPost($postid, $body)
+    // update record from form data
+    public function updateBlogPost()
     {
         $conn = parent::connect();
+
+
         $sql = "UPDATE blog set body = :body where postid = :postid";
-        echo $sql;
         try {
             $st = $conn->prepare($sql);
-            $st->bindValue(":postid", $postid, PDO::PARAM_STR);
-            $st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->bindValue( ":postid", $this->data["postid"], PDO::PARAM_STR );
+            $st->bindValue( ":body", $this->data["body"], PDO::PARAM_STR );
             $st->execute();
             parent::disconnect($conn);
         } catch (PDOException $e) {
@@ -138,7 +137,7 @@ class Blog extends DataObject
         }
     }
 
-
+    
 
     // delete single post
     public function deleteBlogPost($postid )
