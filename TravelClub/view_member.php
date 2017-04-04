@@ -1,9 +1,6 @@
 <?php
-require_once( "common.inc.php" );
-require_once( "config.php" );
-require_once( "Member.class.php" );
-require_once( "LogEntry.class.php" );
-// retrieve member id passed to this page and display member, otherwise display error
+require_once("common.inc.php");
+
 $memberId = isset( $_GET["memberId"] ) ? (int)$_GET["memberId"] : 0;
 if ( !$member = Member::getMember( $memberId ) ) {
     displayPageHeader( "Error" );
@@ -15,7 +12,7 @@ $logEntries = LogEntry::getLogEntries( $memberId );
 displayPageHeader( "View member: " . $member->getValueEncoded( "firstName" ) . " " . $member->getValueEncoded( "lastName" ) );
 ?>
 
-// boilerplate html for displaying member record details
+<!--  boilerplate html for displaying member record details -->
 <table style="width: 30em; border: 1px solid #666;">
     <tr><td>Username</td>
     <td><?php echo $member->getValueEncoded( "username" ) ?></td></tr>
@@ -57,7 +54,7 @@ displayPageHeader( "View member: " . $member->getValueEncoded( "firstName" ) . "
     }
     ?>
 </table>
-// create back link to referring page
+<!-- create back link to referring page -->
 <div style="width: 30em; margin-top: 20px; text-align: center;">
     <a href="javascript:history.go(-1)">Back</a>
 </div>

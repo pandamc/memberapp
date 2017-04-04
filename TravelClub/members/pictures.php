@@ -1,8 +1,15 @@
 <?php
-require_once( "../common.inc.php" );
+require_once("../configFiles/common.inc.php");
 checkLogin();
-displayPageHeader( "Contact the book club", true );
+displayNavBar();
+displayPageHeader( "Upload pictures here", true );
 ?>
-    <p>You can contact Marian, the organizer of the book club, on <strong>555-1234</strong>.</p>
-    <p><a href="index.php">Members' area home page</a></p>
+    <form action="../upload.php" method="post" enctype="multipart/form-data">
+        <div class="tableStyle">
+        Select image to upload:
+            <br>
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload Image" name="submit">
+            </div>
+    </form>
 <?php displayPageFooter(); ?>

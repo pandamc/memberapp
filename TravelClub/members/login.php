@@ -1,5 +1,5 @@
 <?php
-require_once("../common.inc.php");
+require_once("../configFiles/common.inc.php");
 session_start();
 
 // login or display the form for login
@@ -67,7 +67,7 @@ function processForm() {
 function displayThanks() {
 
     displayPageHeader( "Thanks for logging in!", true );
-    header( "Location: index.php" );
+    header( "Location: gallery.php" );
     ?>
     <p>Thank you for logging in. Please proceed to the <a href="index.php">members' area</a>.</p>
     <?php

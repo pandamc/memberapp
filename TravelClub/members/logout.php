@@ -1,5 +1,5 @@
 <?php
-require_once( "../common.inc.php" );
+require_once("../configFiles/common.inc.php");
 session_start();
 $_SESSION["member"] = "";
 displayPageHeader( "Logged out", true );

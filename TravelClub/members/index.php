@@ -1,5 +1,5 @@
 <?php
-require_once( "../common.inc.php" );
+require_once("../common.inc.php");
 checkLogin();
 displayPageHeader( "Welcome to the Members' Area", true );
 ?>

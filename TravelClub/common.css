@@ -79,3 +79,7 @@ input {
 input[type=radio], input[type=checkbox], input[type=submit], input[type=reset], input[type=button], input[type=image] {
 	width: auto;
 }
+
+.tableStyle {
+	width: 50%; border: 1px solid #666;
+}

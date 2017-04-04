@@ -1,5 +1,5 @@
 <?php
-require_once("../configFiles/common.inc.php");
+require_once("../common.inc.php");
 
 
 
@@ -42,13 +42,13 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
             <!--<label for="userid"<?php validateField( "userid", $missingFields ) ?>>user id</label>-->
             <input type="hidden" id="userid" cols="50" name="userid" rows="4" value="<?php echo $_SESSION["member"]->getValue( "id" ); ?>"><?php echo $blog->getValueEncoded( "userid" ) ?>
             <div style="clear: both;">
-            <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Post</label>
-            <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
-            <div style="clear: both;">
-                <input id="submitButton" name="submitButton" type="submit" value="Send Details">
-                <input id="resetButton" name="resetButton" style="margin-right: 20px;" type="reset" value="Reset Form">
+                <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Post</label>
+                <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
+                <div style="clear: both;">
+                    <input id="submitButton" name="submitButton" type="submit" value="Send Details">
+                    <input id="resetButton" name="resetButton" style="margin-right: 20px;" type="reset" value="Reset Form">
+                </div>
             </div>
-        </div>
     </form>
     <?php
     displayPageFooter();
@@ -66,7 +66,7 @@ function processForm() {
         "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : "",
         "postdate" =>  date( "Y-m-d H:i:s" )
 
-        ) );
+    ) );
     foreach ( $requiredFields as $requiredField ) {
         if ( !$blog->getValue( $requiredField ) ) {
             $missingFields[] = $requiredField;

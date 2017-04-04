@@ -1,7 +1,7 @@
 <?php
-require_once( "common.inc.php" );
-require_once( "config.php" );
-require_once( "Member.class.php" );
+require_once("common.inc.php");
+require_once("config.php");
+require_once("member.class.php");
 
 // get starting points for displaying members on page
 $start = isset( $_GET["start"] ) ? (int)$_GET["start"] : 0;

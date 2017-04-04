@@ -1,88 +1,114 @@
 <?php
-require_once( "../common.inc.php" );
-require_once( "../Blog.Class.php" );
 
-checkLogin();
+require_once("../common.inc.php");
 
-$user_id = $_SESSION["member"]->getValue( "id" );
-$username = $_SESSION["member"]->getValue( "username" );
-print_r($_SESSION);
+$postid = isset( $_REQUEST["postid"] ) ? (int)$_REQUEST["postid"] : 0;
+//$postid = isset( $_GET["postid"] ) ? (string)$_GET["postid"] : 0;
+$body = isset( $_GET["body"] ) ? (string)$_GET["body"] : 0;
+echo $postid;
 echo "<br>";
-echo $user_id;
+echo $body;
 echo "<br>";
-echo $username;
-// if the form action is register add user or handle errors
-if ( isset( $_POST["action"] ) and $_POST["action"] == "newBlogPost" ) {
-    processForm();
-} else {
-    displayForm( array(), array(), new Blog( array() ) );
+
+
+
+if ( !$post = Blog::viewBlogPost( $postid, $body)) {
+    displayPageHeader( "Error" );
+    echo "<div>Post not found.</div>";
+    displayPageFooter();
+//    exit;
 }
 
-// if there are no errors display the form
-function displayForm( $errorMessages, $missingFields, $blog ) {
-    displayPageHeader( "HI, tell us about your latest trip!" );
+if ( isset( $_POST["action"] ) and $_POST["action"] == "Save Changes" ) {
+    saveChanges();
+}
+elseif ( isset( $_POST["action"] ) and $_POST["action"] == "Delete Member" ) {
+    deleteMember();
+} else {
+    displayForm( array(), array(), $post );
+}
 
-    if ( $errorMessages ) {
-        foreach ( $errorMessages as $errorMessage ) {
+function displayForm( $errorMessages, $missingFields, $post )
+{
+    $post = Blog::viewBlogPost($post->getValue("postid"));
+    displayPageHeader("View post: " . $post->getValueEncoded("postid"));
+
+    if ($errorMessages) {
+        foreach ($errorMessages as $errorMessage) {
             echo $errorMessage;
         }
     } else {
         ?>
-        <p>Add a new blog post</p>
-        <p>Fields marked with an asterisk (*) are required.</p>
+        <p>Add a blog post.</p>
     <?php } ?>
-    <form action="newBlogPost.php" method="post" style="margin-bottom: 50px;">
-        <div style="width: 30em;">
-            <input name="action" type="hidden" value="newBlogPost">
 
-            <label for="body">Enter your post here</label>
-            <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
-            <div style="clear: both;">
-                <input id="submitButton" name="submitButton" type="submit" value="Send Details">
-                <input id="resetButton" name="resetButton" style="margin-right: 20px;" type="reset" value="Reset Form">
-            </div>
+
+
+
+
+
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" style="margin-bottom: 50px;" xmlns="http://www.w3.org/1999/html">
+    <div style="width: 30em;">
+        <input type="hidden" name="postid" id="postid" value="<?php echo $post->getValueEncoded( "postid" ) ?>">
+        <label for="body"<?php validateField( "body", $missingFields ) ?>>Text *</label>
+        <input type="textarea" ows="4" cols="50" name="body" id="body" value="<?php echo $post->getValueEncoded( "body" ) ?>">
+        </textarea>
+        <div style="clear: both;">
+            <input type="submit" name="action" id="saveButton" value="Save Changes">
+           <!-- <input type="submit" name="action" id="deleteButton" value="Delete Member" style="margin-right: 20px;">-->
         </div>
-    </form>
+    </div>
+</form>
+
+
     <?php
     displayPageFooter();
 }
 
-//  process the form data and store it in the database
-function processForm() {
 
-    $requiredFields = array( "body" );
+function saveChanges() {
+
+    $requiredFields = array( "body");
     $missingFields = array();
     $errorMessages = array();
-    $blog = new blog( array(
-        "user_id" =>  $_SESSION["blog"]->getValue( "id" ),
-        "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : ""
 
+    $post = new Blog( array(
+        "postid" => isset( $_POST["postid"] ) ? (int) $_POST["postid"] : "",
+        "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : "",
     ) );
+
     foreach ( $requiredFields as $requiredField ) {
-        if ( !$blog->getValue( $requiredField ) ) {
+        if ( !$post->getValue( $requiredField ) ) {
             $missingFields[] = $requiredField;
         }
     }
-    // deal with errors
+
     if ( $missingFields ) {
-        $errorMessages[] = '<p class="error">There were some missing fields in the form you submitted. Please complete the fields highlighted below and click Send Details to resend the form.</p>';
+        $errorMessages[] = '<p class="error">There were some missing fields in the form you submitted. Please complete the fields highlighted below and click Save Changes to resend the form.</p>';
     }
+
 
     if ( $errorMessages ) {
-        displayForm( $errorMessages, $missingFields, $blog );
+        displayForm( $errorMessages, $missingFields, $post );
     } else {
-        $blog->insert();
-        displayThanks();
+        $post->updateBlogPost();
+        displaySuccess();
     }
+
 }
 
-// when the values are stored, display a thankyou page
-function displayThanks() {
-
-    displayPageHeader( "Thanks for registering!" );
+function displaySuccess() {
+    $start = isset( $_REQUEST["start"] ) ? (int)$_REQUEST["start"] : 0;
+    $order = isset( $_REQUEST["order"] ) ? preg_replace( "/[^ a-zA-Z]/", "", $_REQUEST["order"] ) : "username";
+    displayPageHeader( "Changes saved" );
     ?>
-    <p>Thank you for the new post, happy travels</p>
+
+    <p>Your changes have been saved. <a href="view_members.php?start=<?php echo $start ?>&amp;order=<?php echo $order ?>">Return to member list</a></p>
+
     <?php
+
     displayPageFooter();
+
 }
+
 ?>

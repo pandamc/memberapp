@@ -1,17 +1,16 @@
 
 <?php
 
-
-require_once("../common.inc.php");
+require_once("../configFiles/common.inc.php");
 
 checkLogin();
-
+displayNavBar();
 $userid = $_SESSION["member"]->getValue( "id" );
 
 $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
 $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
-displayNavBar();
+
 list($posts, $totalRows) = Blog::viewMyPosts($start, PAGE_SIZE, $order, $userid);
 
 displayPageHeader("View your blog posts", true);
@@ -24,7 +23,7 @@ displayPageHeader("View your blog posts", true);
 
 
 <h2>Displaying Blog Posts <?php echo $start + 1 ?> - <?php echo min( $start +  PAGE_SIZE, $totalRows ) ?> of <?php echo $totalRows ?></h2>
-<table style="width: 30em; border: 1px solid #666;">
+<table class="tableStyle">
     <tr>
 
         // allow user to set order by column
