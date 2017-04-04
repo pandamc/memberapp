@@ -6,9 +6,14 @@ checkLogin();
 $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
 $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
+
+$username = isset($_GET["username"]) ? (int)$_GET["username"] : 0;
+echo $username;
+
 displayNavBar();
 list($posts, $totalRows) = Blog::getPosts($start, PAGE_SIZE, $order);
 displayPageHeader("View recent blog posts", true);
+
 
 
 
@@ -32,7 +37,7 @@ displayPageHeader("View recent blog posts", true);
             ?>
 
             <tr<?php if ($rowCount % 2 == 0) echo ' class="alt"' ?>>
-                <td><?php echo $post->getValueEncoded("userid") ?></td>
+                <td><?php echo $post->getValueEncoded("username") ?></td>
                 <td><?php echo $post->getValueEncoded("postid") ?></td>
                 <td><?php echo $post->getValueEncoded("body") ?> <br> <br> <a href="/TravelClub/members/addComment.php">add a comment</a> </td>
                 <td><?php echo $post->getValueEncoded("postdate") ?></td>
