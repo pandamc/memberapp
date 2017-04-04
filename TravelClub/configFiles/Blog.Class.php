@@ -13,14 +13,17 @@ class Blog extends DataObject
         "userid" => "",
         "postid" => "",
         "body" => "",
-        "postdate" => ""
+        "postdate" => "",
+        "username" => ""
     );
 
     // gather the data for the blog posts using a prepared sql statement, loop through the results and store each in a blog object, handle errors,
     public static function getPosts($startRow, $numRows, $order)
     {
         $conn = parent::connect();
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG . " ORDER BY $order LIMIT :startRow, :numRows";
+        //$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG . " ORDER BY $order LIMIT :startRow, :numRows";
+        $sql = "select t1.username, t2.postid,   t2.body, t2.postdate" .  " from members t1, blog t2" .  " where t1.id = t2.userid";
+        echo $sql;
         try {
             $st = $conn->prepare($sql);
             $st->bindValue(":startRow", $startRow, PDO::PARAM_INT);
@@ -70,7 +73,6 @@ class Blog extends DataObject
 
 
     // user can view all their own posts
-    //public static function viewMyPosts($startRow, $numRows, $order, $direction, $userid)
         public static function viewMyPosts($startRow, $numRows, $order, $userid)
     {
         $conn = parent::connect();
