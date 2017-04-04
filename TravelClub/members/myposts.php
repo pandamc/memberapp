@@ -11,6 +11,7 @@ $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
 $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
 
+//list($posts, $totalRows) = Blog::viewMyPosts($start, PAGE_SIZE, $order, $userid, $postid, $body, $postdate);
 list($posts, $totalRows) = Blog::viewMyPosts($start, PAGE_SIZE, $order, $userid);
 
 displayPageHeader("View your blog posts", true);
@@ -27,7 +28,7 @@ displayPageHeader("View your blog posts", true);
     <tr>
 
         // allow user to set order by column
-        <th>User <?php if ( $order != "userid" ) { ?><a href="blog.php?order=userid&$direction=ASC"><?php } ?>^<?php if ( $order != "userid") { ?></a><?php } ?></th>
+        <th>User <?php if ( $order != "username" ) { ?><a href="blog.php?order=userid&$direction=ASC"><?php } ?>^<?php if ( $order != "username") { ?></a><?php } ?></th>
         <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid&DESC"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
         <th><?php if ( $order != "body" ) { ?><a href="blog.php?order=body"><?php } ?>post<?php if ( $order != "body" ) { ?></a><?php } ?></th>
         <th><?php if ( $order != "postdate" ) { ?><a href="blog.php?order=postdate"><?php } ?>post date<?php if ( $order != "postdate" ) { ?></a><?php } ?></th>
@@ -41,7 +42,7 @@ displayPageHeader("View your blog posts", true);
         ?>
 
         <tr<?php if ($rowCount % 2 == 0) echo ' class="alt"' ?>>
-            <td><?php echo $post->getValueEncoded("userid") ?></td>
+            <td><?php echo $post->getValueEncoded("username") ?></td>
             <td><?php echo $post->getValueEncoded("postid") ?></td>
             <td><?php echo $post->getValueEncoded("body") ?></td>
             <td><?php echo $post->getValueEncoded("postdate") ?></td>

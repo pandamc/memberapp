@@ -7,11 +7,9 @@ $start = isset($_GET["start"]) ? (int)$_GET["start"] : 0;
 // get column to order results by
 $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"]) : "postid";
 
-$username = isset($_GET["username"]) ? (int)$_GET["username"] : 0;
-echo $username;
-
 displayNavBar();
 list($posts, $totalRows) = Blog::getPosts($start, PAGE_SIZE, $order);
+//list($username) = Blog::getUserName($username);
 displayPageHeader("View recent blog posts", true);
 
 
@@ -25,7 +23,7 @@ displayPageHeader("View recent blog posts", true);
         <tr>
 
             <!-- allow user to set order by column-->
-            <th><?php if ( $order != "userid" ) { ?><a href="blog.php?order=userid"><?php } ?>User<?php if ( $order != "userid" ) { ?></a><?php } ?></th>
+            <th><?php if ( $order != "username" ) { ?><a href="blog.php?order=userid"><?php } ?>User<?php if ( $order != "username" ) { ?></a><?php } ?></th>
             <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
             <th><?php if ( $order != "body" ) { ?><a href="blog.php?order=body"><?php } ?>post<?php if ( $order != "body" ) { ?></a><?php } ?></th>
             <th><?php if ( $order != "postdate" ) { ?><a href="blog.php?order=postdate"><?php } ?>post date<?php if ( $order != "postdate" ) { ?></a><?php } ?></th>
