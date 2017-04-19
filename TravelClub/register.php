@@ -1,6 +1,6 @@
 <?php
-require_once("common.inc.php");
-
+require_once("configFiles/common.inc.php");
+displayIndexNavBar();
 // if the form action is register add user or handle errors
 if ( isset( $_POST["action"] ) and $_POST["action"] == "register" ) {
     processForm();
@@ -18,7 +18,7 @@ function displayForm( $errorMessages, $missingFields, $member ) {
         }
     } else {
         ?>
-        <p>Welcome to the web;s latest travel club.</p>
+        <p>Welcome to the web's latest travel club.</p>
         <p>To register, please fill in your details below and click Send Details.</p>
         <p>Fields marked with an asterisk (*) are required.</p>
     <?php } ?>
@@ -112,7 +112,7 @@ function displayThanks() {
 
     displayPageHeader( "Thanks for registering!" );
     ?>
-    <p>Thank you, you're the latest member of our Travel club.</p>
+    <p>Thank you, you're the latest member of our Travel club.  Explore the <a href="/TravelClub/members/index.php">member area</a></p>
     <?php
     displayPageFooter();
 }

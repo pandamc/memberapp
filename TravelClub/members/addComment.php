@@ -1,5 +1,5 @@
 <?php
-require_once("../common.inc.php");
+require_once("../configFiles/common.inc.php");
 
 
 
@@ -7,17 +7,22 @@ checkLogin();
 
 $userid = $_SESSION["member"]->getValue( "id" );
 
+
 $username = $_SESSION["member"]->getValue( "username" );
+$postid = isset( $_REQUEST["postid"] ) ? (int)$_REQUEST["postid"] : 0;
+
 
 // show nav bar for members area
 displayNavBar();
-
+echo $userid;
+echo "<br>";
+echo $postid;
 // if the form action is register add user or handle errors
-if ( isset( $_POST["action"] ) and $_POST["action"] == "insertBlogPost" ) {
+if ( isset( $_POST["action"] ) and $_POST["action"] == "addComment" ) {
     $userid = $_SESSION["member"]->getValue( "id" );
     processForm();
 } else {
-    displayForm( array(), array(), new Blog( array() ) );
+    displayForm( array(), array(), new Comment( array() ) );
 }
 
 
@@ -31,18 +36,19 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
         }
     } else {
         ?>
-        <p>Add a blog post.</p>
+        <p>Hi <?php echo $_SESSION["member"]->getValue( "username" ); ?> add a comment to this post.</p>
     <?php } ?>
 
 
 
-    <form action="newBlogPost.php" method="post" style="margin-bottom: 50px;">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" style="margin-bottom: 50px;">
         <div style="width: 30em;">
-            <input name="action" type="hidden" value="insertBlogPost">
+            <input name="action" type="hidden" value="addComment">
             <!--<label for="userid"<?php validateField( "userid", $missingFields ) ?>>user id</label>-->
             <input type="hidden" id="userid" cols="50" name="userid" rows="4" value="<?php echo $_SESSION["member"]->getValue( "id" ); ?>"><?php echo $blog->getValueEncoded( "userid" ) ?>
+            <input type="hidden" id="postid" cols="50" name="postid" rows="4" value="<?php echo $_REQUEST['postid'] ?>;"<?php echo $blog->getValueEncoded( "postid" ) ?>
             <div style="clear: both;">
-                <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Post</label>
+                <label for="body"<?php validateField( "body", $missingFields ) ?>>Add a Comment</label>
                 <textarea id="body" cols="50" name="body" rows="4"><?php echo $blog->getValueEncoded( "body" ) ?></textarea>
                 <div style="clear: both;">
                     <input id="submitButton" name="submitButton" type="submit" value="Send Details">
@@ -58,17 +64,18 @@ function displayForm( $errorMessages, $missingFields, $blog ) {
 function processForm() {
 
 
-    $requiredFields = array( "userid", "body" );
+    $requiredFields = array( "userid", "postid" ,"body" );
     $missingFields = array();
     $errorMessages = array();
-    $blog = new blog( array(
+    $comment = new Comment( array(
         "userid" => isset( $_POST["userid"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["userid"] ) : "",
+        "postid" => isset( $_POST["postid"] ) ? (int) $_POST["postid"] : "",
         "body" => isset( $_POST["body"] ) ? preg_replace( "/[^ \-\_a-zA-Z0-9]/", "", $_POST["body"] ) : "",
         "postdate" =>  date( "Y-m-d H:i:s" )
 
     ) );
     foreach ( $requiredFields as $requiredField ) {
-        if ( !$blog->getValue( $requiredField ) ) {
+        if ( !$comment->getValue( $requiredField ) ) {
             $missingFields[] = $requiredField;
         }
     }
@@ -78,9 +85,9 @@ function processForm() {
     }
 
     if ( $errorMessages ) {
-        displayForm( $errorMessages, $missingFields, $blog );
+        displayForm( $errorMessages, $missingFields, $comment );
     } else {
-        $blog->insertBlogPost();
+        $comment->addComment();
         displayThanks();
     }
 }
@@ -88,10 +95,10 @@ function processForm() {
 // when the values are stored, display a thankyou page
 function displayThanks() {
 
-    displayPageHeader( "Thanks for blogging with us!" );
+    displayPageHeader( "Thanks for your comment!" );
     ?>
-    <p>Thank you, your blog post has been added.</p>
-    <a href="blog.php">go to blog page</a>
+    <p>Thank you, your comment has been added.</p>
+    <a href="blog.php/">go to blog page</a>
     <?php
 //sleep(5);
 //header("Location: blog.php");

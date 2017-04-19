@@ -91,11 +91,8 @@ function displayThanks() {
     displayPageHeader( "Thanks for blogging with us!" );
     ?>
     <p>Thank you, your blog post has been added.</p>
-    <a href="blog.php">go to blog page</a>
+    <a href="../blog.php/">go to blog page</a>
     <?php
-//sleep(5);
-//header("Location: blog.php");
-//exit();
     displayPageFooter();
 }
 ?>

@@ -7,6 +7,8 @@ require_once("member.class.php");
 require_once("LogEntry.class.php");
 require_once("Blog.Class.php");
 require_once("memberNav.php");
+require_once("Comment.Class.php");
+require_once("navBar.php");
 // boiler plate for html pages to avoid code repetition
 // display header
 function displayPageHeader( $pageTitle, $membersArea = false ) {

@@ -9,7 +9,8 @@ $order = isset($_GET["order"]) ? preg_replace("/[^a-zA-Z]/", "", $_GET["order"])
 
 displayNavBar();
 list($posts, $totalRows) = Blog::getPosts($start, PAGE_SIZE, $order);
-//list($username) = Blog::getUserName($username);
+//list($comments, $totalRows) = Comment::getCommentsPerPost();
+
 displayPageHeader("View recent blog posts", true);
 
 
@@ -27,6 +28,7 @@ displayPageHeader("View recent blog posts", true);
             <th><?php if ( $order != "postid" ) { ?><a href="blog.php?order=postid"><?php } ?>post id<?php if ( $order != "postid" ) { ?></a><?php } ?></th>
             <th><?php if ( $order != "body" ) { ?><a href="blog.php?order=body"><?php } ?>post<?php if ( $order != "body" ) { ?></a><?php } ?></th>
             <th><?php if ( $order != "postdate" ) { ?><a href="blog.php?order=postdate"><?php } ?>post date<?php if ( $order != "postdate" ) { ?></a><?php } ?></th>
+            <th>comment</th>
         </tr>
         <?php
         $rowCount = 0;
@@ -37,8 +39,11 @@ displayPageHeader("View recent blog posts", true);
             <tr<?php if ($rowCount % 2 == 0) echo ' class="alt"' ?>>
                 <td><?php echo $post->getValueEncoded("username") ?></td>
                 <td><?php echo $post->getValueEncoded("postid") ?></td>
-                <td><?php echo $post->getValueEncoded("body") ?> <br> <br> <a href="/TravelClub/members/addComment.php">add a comment</a> </td>
+                <td><?php echo $post->getValueEncoded("body") ?>
+                    <br> <br> <a href="../addComment.php?postid=<?php echo $post->getValueEncoded( "postid" ) ?>">Add a comment</a>
+                </td>
                 <td><?php echo $post->getValueEncoded("postdate") ?></td>
+                <td><a href="../showcomments.php?postid=<?php echo $post->getValueEncoded("postid") ?>" >show comments on this post</a></td>
             </tr>
             <?php
 

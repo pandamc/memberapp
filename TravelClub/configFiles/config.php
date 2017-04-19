@@ -7,4 +7,5 @@ define( "PAGE_SIZE", 5 );
 define( "TBL_MEMBERS", "members" );
 define( "TBL_ACCESS_LOG", "accessLog" );
 define( "TBL_BLOG", "blog" );
+define( "TBL_COMMENT" , "comments");
 ?>

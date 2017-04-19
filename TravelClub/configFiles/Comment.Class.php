@@ -23,35 +23,6 @@ class Comment extends DataObject
     //
     //
 
-    // gather the data for the blog posts using a prepared sql statement, loop through the results and store each in a blog object, handle errors,
-    // user can view all their own posts
-   /*
-    public static function viewComments($startRow, $numRows, $order, $userid)
-    {
-        $conn = parent::connect();
-        //$sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order  $direction LIMIT :startRow, :numRows";
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM " . TBL_BLOG .  " WHERE userid = :userid " . "ORDER BY $order   LIMIT :startRow, :numRows";
-        try {
-            $st = $conn->prepare($sql);
-            $st->bindValue(":startRow", $startRow, PDO::PARAM_INT);
-            $st->bindValue(":numRows", $numRows, PDO::PARAM_INT);
-            $st->bindValue(":userid", $userid, PDO::PARAM_INT);
-            $st->execute();
-            $posts = array();
-            foreach ($st->fetchAll() as $row) {
-                $posts[] = new Blog($row);
-            }
-            $st = $conn->query("SELECT found_rows() AS totalRows");
-            $row = $st->fetch();
-            parent::disconnect($conn);
-            return array($posts, $row["totalRows"]);
-        } catch (PDOException $e) {
-            parent::disconnect($conn);
-            die("Query failed: " . $e->getMessage());
-        }
-    }
-
-   */
 
 
     // add a comment to a post
@@ -89,7 +60,7 @@ class Comment extends DataObject
     public static function getCommentsPerPost($startRow, $numRows, $order, $postid)
     {
         $conn = parent::connect();
-        $sql = "SELECT postid, body, postdate, commentid" . " FROM comments "
+        $sql = "SELECT postid, body, postdate, commentid, userid" . " FROM comments "
             . " WHERE postid = :postid" . " and  "
             . "  EXISTS" . "( select  t1.postid, t1.body, t2.postid "
             . " from comments t1, blog t2 " . " where t1.postid = t2.postid) "
@@ -115,8 +86,65 @@ class Comment extends DataObject
     }
 
 
+    // view single post in update form
+    public function viewComment($commentid )
+    {
+        $conn = parent::connect();
+        $sql = "SELECT * from " . TBL_COMMENT . " WHERE commentid = :commentid ";
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":commentid", $commentid, PDO::PARAM_STR);
+            //$st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->execute();
+            $row = $st->fetch();
+            parent::disconnect($conn);
+            if ($row) return new Comment($row);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+    // update record from form data
+    public function updateComment()
+    {
+        $conn = parent::connect();
 
 
+        $sql = "UPDATE comments set body = :body where commentid = :commentid";
+        echo $sql;
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue( ":commentid", $this->data["commentid"], PDO::PARAM_STR );
+            $st->bindValue( ":body", $this->data["body"], PDO::PARAM_STR );
+            $st->execute();
+            parent::disconnect($conn);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
+
+
+    // delete single comment
+    public function deleteComment($commentid )
+    {
+        $conn = parent::connect();
+        $sql = "DELETE  from " . TBL_COMMENT . " WHERE commentid = :commentid ";
+        //echo $sql;
+        try {
+            $st = $conn->prepare($sql);
+            $st->bindValue(":commentid", $commentid, PDO::PARAM_STR);
+            //$st->bindValue(":body", $body, PDO::PARAM_STR);
+            $st->execute();
+            //$row = $st->fetch();
+            parent::disconnect($conn);
+            //if ($row) return new Blog($row);
+        } catch (PDOException $e) {
+            parent::disconnect($conn);
+            die("Query failed: " . $e->getMessage());
+        }
+    }
 
 
 }

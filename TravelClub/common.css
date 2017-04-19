@@ -83,3 +83,19 @@ input[type=radio], input[type=checkbox], input[type=submit], input[type=reset], 
 .tableStyle {
 	width: 50%; border: 1px solid #666;
 }
+
+.error {
+	background: #dd3333;
+	color: white;
+	padding: 0.2em;
+}
+th {
+	text-align: left;
+	background-color: #bbbbbb;
+}
+th, td {
+	padding: 0.4em;
+}
+tr.alt td {
+	background: #dddddd;
+}
